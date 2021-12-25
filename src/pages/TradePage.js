@@ -213,20 +213,21 @@ class TradePage extends Component {
                       );
                     }}
                   >
-                    <div>
-                      <a id="arrowPairChange">
-                        <i
-                          className="fas fa-arrow-alt-circle-down"
-                          style={{
-                            fontSize: "20px",
-                            color: "#6095cd",
-                            backgroundColor: "#fff",
-                            borderRadius: "9999px",
-                            padding: "0px",
-                          }}
-                        ></i>
-                      </a>
-                    </div>
+//                     <div>
+//                       <a id="arrowPairChange">
+//                         <i
+//                           className="fas fa-arrow-alt-circle-down"
+//                           style={{
+//                             fontSize: "20px",
+//                             color: "#6095cd",
+//                             backgroundColor: "#fff",
+//                             borderRadius: "9999px",
+//                             padding: "0px",
+//                           }}
+//                         ></i>
+//                       </a>
+//                     </div>
+                    <button>Swap AR</button>
                   </div>
 
                   {/* Input Container  */}
