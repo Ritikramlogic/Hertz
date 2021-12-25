@@ -112,3 +112,22 @@ export async function getTransactionhistory() {
     .catch((err) => console.log(err));
   return _data;
 }
+
+export async function transferHertzFromAdminToUser(address, symbol, amount) {
+  let _data;
+  await fetch(
+    BASE_URL +
+      `/v1/transfer?account=ramlogicsabh&to=${address}&amount=${amount}&symbol=${symbol.toUpperCase()}&memo=Testing`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${localStorage.getItem("TOKEN_AUTH")}`,
+        Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFiaGlzaGVrLnNheGVuYUByYW1sb2dpY3MuY29tIiwiaWF0IjoxNjQwMDg1ODQxfQ.dTmudO0I5vC1WxEwSumvXAm5xYZ85rkxVZ1EWsj61Z0"}`,
+      },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => (_data = data));
+  return _data;
+}

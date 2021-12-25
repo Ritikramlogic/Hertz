@@ -10,7 +10,10 @@ import {
   ClaimHertz,
   TranscationStatus,
   SwapCurrency,
-  Approved,
+  ApproveCondition,
+  ApproversCheck,
+  SwapClaimHertz,
+  HertzSwap,
 } from "../Redux/Actions/index";
 
 // map state to props
@@ -28,6 +31,9 @@ function mapStateToProps(state) {
     TradeSymbol: state.TradeSymbol,
     metamaskBalance: state.metamaskBalance,
     isContractSwap: state.isContractSwap,
+    htzSwapContract: state.htzSwapContract,
+    htzContract: state.htzContract,
+    isClaimRewardVisible: state.isClaimRewardVisible,
   };
 }
 
@@ -58,11 +64,11 @@ class TradePage extends Component {
       this.props.TradeFromTO(e.target.value);
       this.props.TradeSymbol.from === "HTZ"
         ? this.props.SetSwap(false)
-        : this.props.Approved(this.props.TradeSymbol.from, true);
+        : this.props.ApproveCondition(true);
     } else {
       this.props.TradeSymbol.from === "HTZ"
         ? this.props.SetSwap(true)
-        : this.props.Approved(this.props.TradeSymbol.from, false);
+        : this.props.ApproveCondition(false);
       this.props.TradeFromTO(e.target.value);
     }
 
@@ -261,7 +267,7 @@ class TradePage extends Component {
                   </InputContainer>
 
                   {/* //Fees Container */}
-                  <FeesContainer>
+                  {/* <FeesContainer>
                     <div
                       style={{
                         color: "#682a30",
@@ -273,6 +279,7 @@ class TradePage extends Component {
                     >
                       Insuficient Balance
                     </div>
+
                     <div>
                       <div class="d-flex justify-content-between flex-direction-row">
                         <p class="mb-1">Swap Fees</p>
@@ -293,7 +300,9 @@ class TradePage extends Component {
                         </p>
                       </div>
                     </div>
-                  </FeesContainer>
+                  </FeesContainer> */}
+
+                  {/* HTZ->BEP20 button */}
                   <SwapButtonWrapper>
                     <div className="swap_tab_04 md-3 py-3">
                       <div
@@ -301,7 +310,7 @@ class TradePage extends Component {
                         style={{ display: "flex" }}
                       >
                         <>
-                          {true ? (
+                          {this.props.isSwapDisabled.visible ? (
                             <button
                               className="btn_outline_light w-100"
                               style={{
@@ -330,7 +339,8 @@ class TradePage extends Component {
                           ) : null}
                         </>
 
-                        {this.props.isClaimReward ? (
+                        {this.props.isClaimReward &&
+                        this.props.isClaimRewardVisible ? (
                           <button
                             className="btn_outline_light w-100"
                             style={{
@@ -338,7 +348,7 @@ class TradePage extends Component {
                                 this.props.contract === null
                                   ? "grey"
                                   : "#26c5eb",
-                              margin: "0 10px",
+                              margin: "0 20px",
                             }}
                             onClick={
                               this.props.contract === null
@@ -350,6 +360,8 @@ class TradePage extends Component {
                           </button>
                         ) : null}
                       </div>
+
+                      {/* BEP20->HTZ button */}
                       <div
                         style={{ display: "flex", justifyContent: "center" }}
                       >
@@ -364,12 +376,15 @@ class TradePage extends Component {
                                 cursor: this.props.isApproved.condition
                                   ? "pointer"
                                   : "default",
-                                margin: "0 10px",
                               }}
                               onClick={
                                 // this.props.isApproved.condition
                                 true
-                                  ? this.props.Approved("BEP20", false)
+                                  ? () =>
+                                      this.props.ApproversCheck(
+                                        this.props.htzContract,
+                                        this.props.tradeValue
+                                      )
                                   : null
                               }
                             >
@@ -377,32 +392,66 @@ class TradePage extends Component {
                             </button>
                           ) : null}
                         </div>
-                        {false ? (
+
+                        {this.props.isApproved.isApprovedSwap &&
+                        this.props.isApproved.isVisible ? (
                           <div>
                             <button
                               className="btn_outline_light w-100"
                               style={{
-                                backgroundColor: this.props.isSwapDisabled
-                                  .condition
-                                  ? "grey"
-                                  : "#26c5eb",
-                                cursor: this.props.isSwapDisabled.condition
-                                  ? "default"
-                                  : "pointer",
+                                backgroundColor: this.props.isApproved.success
+                                  ? "#26c5eb"
+                                  : "grey",
+                                cursor: this.props.isApproved.success
+                                  ? "pointer"
+                                  : "default",
+                                margin: "0 10px",
                               }}
                               id="swappingBtn"
-                              disabled={this.props.isSwapDisabled.condition}
+                              disabled={!this.props.isApproved.success}
                               // onClick={this.SwapClick}
                               onClick={
-                                this.props.isSwapDisabled.condition
-                                  ? null
-                                  : this.props.isSwapDisabled.SwapSymbol ===
-                                    "HTZ"
-                                  ? this.SwapClick
-                                  : () => alert("Swap is called")
+                                this.props.isApproved.success
+                                  ? () =>
+                                      this.props.HertzSwap(
+                                        this.props.htzSwapContract,
+                                        this.props.tradeValue
+                                      )
+                                  : () => alert("success is failed ")
                               }
                             >
                               Swap
+                            </button>
+                          </div>
+                        ) : null}
+
+                        {this.props.isApproved.isClaimVisible ? (
+                          <div>
+                            <button
+                              className="btn_outline_light w-100"
+                              style={{
+                                backgroundColor: this.props.isApproved.isClaim
+                                  ? "#26c5eb"
+                                  : "grey",
+                                cursor: this.props.isApproved.isClaim
+                                  ? "pointer"
+                                  : "default",
+                                marginLeft: "20px",
+                              }}
+                              id="swappingBtn"
+                              disabled={!this.props.isApproved.isClaim}
+                              // onClick={this.SwapClick}
+                              onClick={
+                                this.props.isApproved.isClaim
+                                  ? () =>
+                                      this.props.SwapClaimHertz(
+                                        this.props.account,
+                                        this.props.tradeValue
+                                      )
+                                  : () => alert("success is failed ")
+                              }
+                            >
+                              Claim HTZ
                             </button>
                           </div>
                         ) : null}
@@ -714,6 +763,9 @@ const mapDispatchToProps = {
   ClaimHertz: ClaimHertz,
   TranscationStatus: TranscationStatus,
   SwapCurrency: SwapCurrency,
-  Approved: Approved,
+  ApproveCondition: ApproveCondition,
+  ApproversCheck: ApproversCheck,
+  HertzSwap: HertzSwap,
+  SwapClaimHertz: SwapClaimHertz,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(TradePage);

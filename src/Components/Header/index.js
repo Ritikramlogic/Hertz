@@ -159,33 +159,49 @@ class Header extends Component {
                           className="nav-link "
                           to="https://defi.hertz-network.com"
                         >
-                          Trade
+                          Trade (1:1)
                         </NavLink>
                       </li>
                       <li className="nav-item">
-                        <NavLink
+                        <a
+                          className="nav-link "
+                          style={{ color: "#fff" }}
+                          target="_blank"
+                          href="https://ramlogics.com/trade.php"
+                        >
+                          Trade
+                        </a>
+                      </li>
+                      <li className="nav-item">
+                        <a
                           className="nav-link"
-                          to="https://defi.hertz-network.com/index.php/liquidity"
+                          target="_blank"
+                          style={{ color: "#fff" }}
+                          href="https://ramlogics.com/liquidity.php"
                         >
                           Liquidity
-                        </NavLink>
+                        </a>
                       </li>
 
                       <li className="nav-item">
-                        <NavLink
+                        <a
                           className="nav-link"
-                          to="https://defi.hertz-network.com/index.php/farm"
+                          style={{ color: "#fff" }}
+                          target="_blank"
+                          href="https://ramlogics.com/farm.php"
                         >
                           Farms
-                        </NavLink>
+                        </a>
                       </li>
                       <li className="nav-item">
-                        <NavLink
+                        <a
                           className="nav-link"
-                          to="https://defi.hertz-network.com/index.php/info"
+                          style={{ color: "#fff" }}
+                          target="_blank"
+                          href="https://ramlogics.com/info.php"
                         >
                           Info
-                        </NavLink>
+                        </a>
                       </li>
 
                       <li className="nav-item d-none">

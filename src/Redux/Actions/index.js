@@ -5,6 +5,7 @@ import {
   do2FAuthentication,
   transferHertzToUser,
   getTransactionhistory,
+  transferHertzFromAdminToUser,
 } from "../../Api/index";
 import Web3 from "web3";
 import { ethers } from "ethers";
@@ -13,6 +14,8 @@ import {
   ContractABI,
   HTZContractAddress,
   HTZContractAbi,
+  HTZSwapContractAbi,
+  HTZSwapContractAddress,
 } from "../../Contract/config";
 
 //Get user account details
@@ -55,7 +58,7 @@ export const GetsufficientBalance = (value) => (dispatch) => {
 //Set Contract data
 export const SetContract = () => async (dispatch) => {
   //When metamask is Installed
-  let data, htzContract, metamaskBalance;
+  let data, htzContract, metamaskBalance, htzSwapContract;
   if (typeof window.ethereum !== "undefined") {
     alert("MetaMask is installed!");
 
@@ -90,10 +93,18 @@ export const SetContract = () => async (dispatch) => {
     });
 
     data = new ethers.Contract(ContractAddress, ContractABI, signer);
+
     var web3 = new Web3(window.ethereum);
+
     htzContract = await new web3.eth.Contract(
       HTZContractAbi,
       HTZContractAddress
+    );
+
+    htzSwapContract = new ethers.Contract(
+      HTZSwapContractAddress,
+      HTZSwapContractAbi,
+      signer
     );
 
     metamaskBalance =
@@ -107,6 +118,7 @@ export const SetContract = () => async (dispatch) => {
       contract: data,
       htzContract: htzContract,
       metamaskBalance: metamaskBalance,
+      htzSwapContract: htzSwapContract,
     },
   });
 };
@@ -196,10 +208,6 @@ export const TransferHertzToUser =
   };
 
 export const ClaimHertz = (contract, amount) => async (dispatch) => {
-  console.log(contract);
-  console.log(amount);
-  let str = amount * 10 ** 4;
-
   console.log(await contract.buyToken(amount * 10 ** 4));
   dispatch({ type: "CLAIM_HERTZ", payload: {} });
 };
@@ -218,18 +226,87 @@ export const SwapCurrency = (fromSymbol, toSymbol) => async (dispatch) => {
   });
 };
 
-// Swap Currency
-export const Approved =
-  (visable, condition = false) =>
-  async (dispatch) => {
-    dispatch({
-      type: "APPROVE_CONTRACT",
-      payload: {
-        isVisible: visable === "BEP20",
-        condition: condition,
-      },
-    });
-  };
+//Contract Approive Check
 
+export const ApproversCheck = (HTZcontract, amount) => async (dispatch) => {
+  const account = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  console.log(account[0]);
+  await HTZcontract.methods
+    .approve(HTZSwapContractAddress, amount * 10 ** 4)
+    .send({ from: account[0] })
+    .then((data) => console.log(data))
+    .catch((err) => {
+      if (err.code === 4001) {
+        alert("denied transaction");
+      }
+    });
+
+  //     blockHash: "0xff76d68fb582c823e03cf02614f2519fa868c7217a7f000fc670949f3ec8d449"
+  // blockNumber: 13784627
+  // contractAddress: null
+  // cumulativeGasUsed: 34267151
+  // ->events: {Approval: {…}}
+  // from: "0xaf80db1b7ce3247275fe98bb007b1165bfa98acf"
+  // gasUsed: 44116
+  // logsBloom: "0x00000000000001000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000020000000400000040000000000000000000000000000000000000000800000000000000000000000000000000000000000000000010000000000000000000040000000000000000000000000000000000000000"
+  // status: true
+  // to: "0xb5bba78b4df2d47dd46078514a3e296ab3c344fe"
+  // transactionHash: "0xeb6f879abd952818aafdba9a3aa343456df7d3a95f7bf67cfdee6557522606a2"
+  // transactionIndex: 300
+  // type: "0x0"
+  if (true) {
+    dispatch({
+      type: "APPROVE_CHECK",
+      payload: { condition: false, success: true, isApprovedSwap: true },
+    });
+  } else {
+    dispatch({
+      type: "APPROVE_CHECK",
+      payload: { condition: false, success: false, isApprovedSwap: false },
+    });
+  }
+};
+
+export const ApproveCondition = (value) => async (dispatch) => {
+  dispatch({
+    type: "APPROVE_CONDITION",
+    payload: value,
+  });
+};
+
+export const HertzSwap = (contract, amount) => async (dispatch) => {
+  const account = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  console.log(account[0]);
+  console.log(
+    await contract
+      .hertzSwap(amount * 10 ** 4)
+      .then((data) => alert(`This is the Transaction Hash: ${data.hash}`))
+      .catch((e) => console.log(e))
+  );
+  console.log(contract);
+
+  dispatch({
+    type: "HERTZ_SWAP",
+    payload: { success: false, isClaim: true, isClaimVisible: true },
+  });
+};
+
+export const SwapClaimHertz = (username, amount) => async (dispatch) => {
+  let data = await transferHertzFromAdminToUser(username, "HTZ", amount);
+  console.log(data);
+  if (data.error === "Transaction failed") {
+    alert("Transaction failed");
+  } else {
+    alert("Transaction is successfully complete");
+    dispatch({
+      type: "SWAP_CLAIM_HERTZ",
+      payload: { isClaim: false },
+    });
+  }
+};
 // ritik.chhipa@ramlogics.com
 // Rit@9001586400

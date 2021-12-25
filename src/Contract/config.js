@@ -1,3 +1,4 @@
+//Intrecattion Contract
 export const ContractAddress = "0x11fA90Ff7c5568027a659Ae77055E8032AAdE682";
 export const ContractABI = [
   {
@@ -52,6 +53,7 @@ export const ContractABI = [
   },
 ];
 
+// Hertz  Smart Contract
 export const HTZContractAddress = "0xb5bba78b4df2d47dd46078514a3e296ab3c344fe";
 export const HTZContractAbi = [
   {
@@ -373,6 +375,94 @@ export const HTZContractAbi = [
   {
     inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
+
+// Hertz Swap Interaction Contract
+
+export const HTZSwapContractAddress =
+  "0x7479c76Fa30deCD430cD02193f35Ce76D5FCe4DA";
+export const HTZSwapContractAbi = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_ContractAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_adminAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_adminAddress",
+        type: "address",
+      },
+    ],
+    name: "changeAdminAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_ContractAddress",
+        type: "address",
+      },
+    ],
+    name: "changeContractAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "checkAdminAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "checkContractAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "ammount",
+        type: "uint256",
+      },
+    ],
+    name: "hertzSwap",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

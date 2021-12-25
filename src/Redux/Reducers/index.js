@@ -5,21 +5,27 @@ const initialState = {
   isSwapDisabled: {
     condition: true,
     SwapSymbol: "HTZ",
+    visible: true,
   },
   htZbalance: 0,
   tradeValue: 0,
   contract: null,
   htzContract: null,
+  htzSwapContract: null,
   isSufficientBalance: true,
   is2FAvisable: false,
   isTransaction: false,
   transcations: null,
   isClaimReward: false,
+  isClaimRewardVisible: true,
   isTradeDisabled: true,
   isApproved: {
     isVisible: false,
     condition: false,
     success: false,
+    isApprovedSwap: false,
+    isClaim: false,
+    isClaimVisible: false,
   },
   metamaskBalance: 0,
   TradeSymbol: {
@@ -61,6 +67,7 @@ export const reducer = (state = initialState, action) => {
         contract: action.payload.contract,
         htzContract: action.payload.htzContract,
         metamaskBalance: action.payload.metamaskBalance,
+        htzSwapContract: action.payload.htzSwapContract,
       };
 
     //Transfer Token
@@ -100,13 +107,62 @@ export const reducer = (state = initialState, action) => {
           from: action.payload.from,
           to: action.payload.to,
         },
+        isSwapDisabled: {
+          ...state.isSwapDisabled,
+          visible: state.TradeSymbol.from !== "HTZ" ? true : false,
+          isClaimRewardVisible: !state.isClaimRewardVisible,
+        },
+
+        isApproved: {
+          ...state.isApproved,
+          isVisible: state.TradeSymbol.from === "HTZ" ? true : false,
+        },
       };
     case "APPROVE_CONTRACT":
       return {
         ...state,
         isApproved: {
+          ...state.isApproved,
           isVisible: action.payload.isVisible,
           condition: action.payload.condition,
+        },
+      };
+
+    case "APPROVE_CHECK":
+      return {
+        ...state,
+        isApproved: {
+          ...state.isApproved,
+          success: action.payload.success,
+          condition: action.payload.condition,
+          isApprovedSwap: action.payload.isApprovedSwap,
+        },
+      };
+
+    case "APPROVE_CONDITION":
+      return {
+        ...state,
+        isApproved: {
+          ...state.isApproved,
+          condition: action.payload,
+        },
+      };
+    case "HERTZ_SWAP":
+      return {
+        ...state,
+        isApproved: {
+          ...state.isApproved,
+          success: action.payload.success,
+          isClaim: action.payload.isClaim,
+          isClaimVisible: action.payload.isClaimVisible,
+        },
+      };
+    case "SWAP_CLAIM_HERTZ":
+      return {
+        ...state,
+        isApproved: {
+          ...state.isApproved,
+          isClaim: action.payload.isClaim,
         },
       };
     default:
