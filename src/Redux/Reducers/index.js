@@ -27,6 +27,7 @@ const initialState = {
     isClaim: false,
     isClaimVisible: false,
   },
+  isSwapCurrerncyDisabled: false,
   metamaskBalance: 0,
   TradeSymbol: {
     from: "HTZ",
@@ -45,7 +46,11 @@ export const reducer = (state = initialState, action) => {
         htZbalance: action.payload.balance,
         // htZbalance: 123,
       };
-
+    case "METAMASK_BALANCE":
+      return {
+        ...state,
+        metamaskBalance: action.payload,
+      };
     // Set Trade Value
     case "SET_TRADE_FROM_TO":
       return { ...state, tradeValue: action.payload };
@@ -99,6 +104,15 @@ export const reducer = (state = initialState, action) => {
           condition: action.payload.isSwapDisabled,
         },
         isClaimReward: action.payload.isClaimReward,
+        isSwapCurrerncyDisabled: action.payload.isSwapCurrerncyDisabled,
+      };
+    case "CLAIM_HERTZ":
+      return {
+        ...state,
+        isClaimReward: action.payload.isClaimReward,
+        tradeValue: action.payload.tradeValue,
+        isTradeDisabled: action.payload.isTradeDisabled,
+        isSwapCurrerncyDisabled: action.payload.isSwapCurrerncyDisabled,
       };
     case "SWAP_CURRENCY":
       return {
@@ -137,6 +151,7 @@ export const reducer = (state = initialState, action) => {
           condition: action.payload.condition,
           isApprovedSwap: action.payload.isApprovedSwap,
         },
+        isSwapCurrerncyDisabled: action.payload.isSwapCurrerncyDisabled,
       };
 
     case "APPROVE_CONDITION":
@@ -156,6 +171,7 @@ export const reducer = (state = initialState, action) => {
           isClaim: action.payload.isClaim,
           isClaimVisible: action.payload.isClaimVisible,
         },
+        isTradeDisabled: action.payload.isTradeDisabled,
       };
     case "SWAP_CLAIM_HERTZ":
       return {
@@ -163,7 +179,12 @@ export const reducer = (state = initialState, action) => {
         isApproved: {
           ...state.isApproved,
           isClaim: action.payload.isClaim,
+          isApprovedSwap: action.payload.isApprovedSwap,
+          isClaimVisible: action.payload.isClaimVisible,
         },
+        isSwapCurrerncyDisabled: action.payload.isSwapCurrerncyDisabled,
+        tradeValue: action.payload.tradeValue,
+        isTradeDisabled: action.payload.isTradeDisabled,
       };
     default:
       return state;

@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import { FaArrowAltCircleDown } from "react-icons/fa";
+import { IoMdSettings } from "react-icons/io";
+import { MdWatchLater } from "react-icons/md";
 import {
   GetAccount,
   TradeFromTO,
@@ -34,6 +37,7 @@ function mapStateToProps(state) {
     htzSwapContract: state.htzSwapContract,
     htzContract: state.htzContract,
     isClaimRewardVisible: state.isClaimRewardVisible,
+    isSwapCurrerncyDisabled: state.isSwapCurrerncyDisabled,
   };
 }
 
@@ -94,9 +98,14 @@ class TradePage extends Component {
     );
   }
 
-  claimHertz() {
+  async claimHertz() {
     console.log(this.props.tradeValue);
-    this.props.ClaimHertz(this.props.contract, this.props.tradeValue);
+
+    this.props.ClaimHertz(
+      this.props.contract,
+      this.props.tradeValue,
+      this.props.htzContract
+    );
   }
   render() {
     return (
@@ -119,8 +128,13 @@ class TradePage extends Component {
               <MainWrapper>
                 <RowWrapper>
                   <div data-toggle="modal" data-target="#exampleModalCenter">
-                    <div>
-                      <i className="far fa-cog"></i>
+                    <div
+                      style={{
+                        color: "#26c5eb",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <IoMdSettings size={25} />
                     </div>
                   </div>
                   <div class="col">
@@ -136,12 +150,10 @@ class TradePage extends Component {
                   >
                     <div
                       style={{
-                        fontWeight: "bold",
                         color: "#26c5eb",
-                        fontSize: "18px",
                       }}
                     >
-                      <i className="far fa-clock"></i>
+                      <MdWatchLater size={25} />
                     </div>
                   </div>
                 </RowWrapper>
@@ -205,29 +217,28 @@ class TradePage extends Component {
 
                   {/* Swap icon  */}
 
-                  <div
-                    onClick={() => {
-                      this.props.SwapCurrency(
-                        this.props.TradeSymbol.to,
-                        this.props.TradeSymbol.from
-                      );
-                    }}
-                  >
-//                     <div>
-//                       <a id="arrowPairChange">
-//                         <i
-//                           className="fas fa-arrow-alt-circle-down"
-//                           style={{
-//                             fontSize: "20px",
-//                             color: "#6095cd",
-//                             backgroundColor: "#fff",
-//                             borderRadius: "9999px",
-//                             padding: "0px",
-//                           }}
-//                         ></i>
-//                       </a>
-//                     </div>
-                    <button>Swap AR</button>
+                  <div>
+                    <div>
+                      <FaArrowAltCircleDown
+                        size={20}
+                        style={{
+                          color: "#26c5eb",
+                          backgroundColor: "white",
+                          border: "none",
+                          borderRadius: "999px",
+                        }}
+                        onClick={
+                          this.props.isSwapCurrerncyDisabled
+                            ? null
+                            : () => {
+                                this.props.SwapCurrency(
+                                  this.props.TradeSymbol.to,
+                                  this.props.TradeSymbol.from
+                                );
+                              }
+                        }
+                      />
+                    </div>
                   </div>
 
                   {/* Input Container  */}
@@ -325,7 +336,6 @@ class TradePage extends Component {
                               }}
                               id="swappingBtn"
                               disabled={this.props.isSwapDisabled.condition}
-                              // onClick={this.SwapClick}
                               onClick={
                                 this.props.isSwapDisabled.condition
                                   ? null
@@ -340,8 +350,7 @@ class TradePage extends Component {
                           ) : null}
                         </>
 
-                        {this.props.isClaimReward &&
-                        this.props.isClaimRewardVisible ? (
+                        {this.props.isClaimReward ? (
                           <button
                             className="btn_outline_light w-100"
                             style={{
