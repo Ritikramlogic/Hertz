@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { _2FAuthenticationModal } from "./_2FAuthenticationModal";
 import { HertzModal } from "./HertzModal";
 import { connect } from "react-redux";
+
 import {
   SetContract,
   GetLoginDetails,
   TwoFactorAuthentication,
+  is2FAvisableChanged,
 } from "../../Redux/Actions";
 
 function mapStateToProps(state) {
@@ -27,6 +29,7 @@ class Header extends Component {
       username: "",
       password: "",
       _2FAcode: null,
+      is2FAvisableChanged: false,
       hertzValue: {
         balance: 0,
       },
@@ -47,7 +50,9 @@ class Header extends Component {
 
   //Change State of 2FA visable
   is2FAvisableChanged() {
-    this.setState({ is2FAvisable: !this.state.is2FAvisable });
+    window.$("#HertzModalCenter").modal("hide");
+    window.$("#ConnectModal").modal("hide");
+    window.$(".modal-backdrop").remove();
   }
 
   //Password Change
@@ -273,6 +278,7 @@ class Header extends Component {
                         className="btn btn_Connect_light mx-2"
                         data-toggle="modal"
                         data-target="#ConnectModal"
+                        onClick={() => window.$("#ConnectModal").modal("show")}
                       >
                         Connect to a wallet
                       </button>
@@ -297,7 +303,7 @@ class Header extends Component {
           passwordChanged={this.passwordChanged}
           login={this.Login}
           is2FAvisable={this.props.is2FAvisable}
-          is2FAvisableChanged={this.is2FAvisableChanged}
+          is2FAvisableChanged={this.props.is2FAvisableChanged}
           CodeChange={this.CodeChange}
           code={this.state._2FAcode}
           TwoFactorAuthentication={this.props.TwoFactorAuthentication}
@@ -670,6 +676,7 @@ const mapDispatchToProps = {
   SetContract: SetContract,
   GetLoginDetails: GetLoginDetails,
   TwoFactorAuthentication: TwoFactorAuthentication,
+  is2FAvisableChanged: is2FAvisableChanged,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
 
